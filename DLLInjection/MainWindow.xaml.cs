@@ -37,7 +37,6 @@ namespace DLLInjection
 
             InitializeComponent();
 
-
             window.Title += Environment.Is64BitProcess ? " - x64" : " - x86";
 
             ok.Click += (sender, x) => { choiceHappen?.Invoke(PopupChoices.Ok); ClosePopup(); };
@@ -51,8 +50,10 @@ namespace DLLInjection
             //init popup make sure everything is closed.
             ClosePopup();
 
-
-            PopulateInfo(null, null);
+            //get excluded procs
+            RefreshProcesses(null, null);
+            //dispose
+            CleanupProcs(null, null);
         }
 
 
@@ -313,29 +314,40 @@ namespace DLLInjection
                     }
 
                     if (!has)
+                    {
                         yield return p;
+                    }
                 }
             }
         }
 
-        //OnDropDown
-        private void PopulateInfo(object sender, EventArgs e)
+        public IEnumerable<CustomItem> Items
         {
-            bool expecting = Environment.Is64BitProcess;
-
-            process.Items.Clear();
-            foreach (Process item in ValidProcs
-                .OrderBy(x => x.ProcessName)
-                .OrderBy(x => x.Id)
-                .OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero)
-                )
+            get
             {
-                //TODO : checkbox for background procs?
-                if (IsX64(item) == expecting/* && item.MainWindowHandle != IntPtr.Zero*/)
+                bool expecting = Environment.Is64BitProcess;
+
+                foreach (Process item in ValidProcs
+                    .OrderBy(x => x.ProcessName)
+                    .OrderBy(x => x.Id)
+                    .OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero)
+                    )
                 {
-                    process.Items.Add(new CustomItem(item));
+                    //TODO : checkbox for background procs?
+                    if (IsX64(item) == expecting/* && item.MainWindowHandle != IntPtr.Zero*/)
+                    {
+                        yield return new CustomItem(item);
+                    }
                 }
+
             }
+        }
+
+        //grab the valid procs and then refresh the view
+        private void RefreshProcesses(object sender, EventArgs e)
+        {
+            process.ItemsSource = Items;
+            process.Items.Refresh();
         }
 
         //Disposes all processes
@@ -349,6 +361,7 @@ namespace DLLInjection
             {
                 item.Dispose();
             }
+
         }
         #endregion
 
@@ -496,6 +509,8 @@ namespace DLLInjection
             }
         }
         #endregion
+
+       
     }
 
     enum PopupChoices
@@ -515,23 +530,20 @@ namespace DLLInjection
 
         public CustomItem(Process proc)
         {
+
+            string hasUI = proc.MainWindowHandle == IntPtr.Zero ? "No" : "Yes";
             procName = proc.ProcessName;
             item = new TextBlock
             {
                 FontSize = 13,
-                Text = $"{proc.ProcessName} ➟ {proc.Id} ➟ UI: {HasUI(proc)}"
+
+                Text = $"{proc.ProcessName} ➟ {proc.Id} ➟ UI: {hasUI}"
             };
+
+          
 
             item.Padding = new Thickness(0, 0, 0, 8);
             Content = item;
-        }
-
-        string HasUI(Process p)
-        {
-            if (p.MainWindowHandle == IntPtr.Zero)
-                return "No";
-
-            return "Yes";
         }
 
         public string procName;

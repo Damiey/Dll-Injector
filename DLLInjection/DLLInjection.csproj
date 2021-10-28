@@ -81,9 +81,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DM, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="DM, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Resources\DM.dll</HintPath>
+      <HintPath>Resources\x86\DM.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

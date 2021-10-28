@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DLLInjection"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance local:MainWindow, IsDesignTimeCreatable=True}"
         Title="DLL Injector" x:Name="window"  Height="400" Width="520" MaxHeight="450" MaxWidth="520" ResizeMode="CanMinimize" Icon="/needle.png" Background="#FF323439">
     <Window.Resources>
 
@@ -58,9 +59,18 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+
     </Window.Resources>
 
     <Grid>
+
+        <Grid.Resources>
+            <Style x:Key="fix" TargetType="{x:Type ComboBoxItem}">
+                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                <Setter Property="VerticalContentAlignment" Value="Top" />
+            </Style>
+        </Grid.Resources>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="10"/>
@@ -76,7 +86,7 @@
             <DockPanel>
                 <TextBlock Foreground="White" Text="Process:" FontSize="15"/>
                 <Rectangle Width="5"/>
-                <ComboBox Name="process" DropDownClosed="CleanupProcs" IsEditable="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="20" Width="350" BorderBrush="Black" HorizontalAlignment="Left" VerticalAlignment="Top" DropDownOpened="PopulateInfo">
+                <ComboBox DropDownClosed="CleanupProcs" DropDownOpened="RefreshProcesses" Name="process" IsEditable="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Height="20" Width="350" BorderBrush="Black" HorizontalAlignment="Left" VerticalAlignment="Top">
                 </ComboBox>
                 <Rectangle Width="5"/>
                 <CheckBox Name="injAll" Foreground="White" BorderBrush="Black" Content="Inject All"
